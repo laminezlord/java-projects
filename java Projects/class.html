@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Manager</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    input {
+      width: 70%;
+      padding: 10px;
+    }
+
+    button {
+      padding: 10px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .read {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .empty {
+      text-align: center;
+      color: gray;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <h2>📚 Book Manager</h2>
+
+  <input type="text" id="bookInput" placeholder="Enter book title">
+  <button id="addBookBtn">Add</button>
+
+  <ul id="bookList"></ul>
+  <p id="emptyMessage" class="empty">No books added yet</p>
+</div>
+
+<script>
+// State
+let books = [];
+
+// DOM
+const input = document.getElementById("bookInput");
+const addBtn = document.getElementById("addBookBtn");
+const list = document.getElementById("bookList");
+const emptyMsg = document.getElementById("emptyMessage");
+
+// Add book
+function addBook() {
+  const title = input.value.trim();
+
+  if (!title) return;
+
+  books.push({
+    id: Date.now(),
+    title,
+    read: false
+  });
+
+  input.value = "";
+  renderBooks();
+}
+
+// Remove book
+function removeBook(id) {
+  books = books.filter(book => book.id !== id);
+  renderBooks();
+}
+
+// Toggle read
+function toggleRead(id) {
+  books = books.map(book =>
+    book.id === id ? { ...book, read: !book.read } : book
+  );
+  renderBooks();
+}
+
+// Render UI
+function renderBooks() {
+  list.innerHTML = "";
+
+  if (books.length === 0) {
+    emptyMsg.style.display = "block";
+    return;
+  }
+
+  emptyMsg.style.display = "none";
+
+  books.forEach(book => {
+    const li = document.createElement("li");
+
+    const title = document.createElement("span");
+    title.textContent = book.title;
+    if (book.read) title.classList.add("read");
+
+    const actions = document.createElement("div");
+
+    const readBtn = document.createElement("button");
+    readBtn.textContent = "✓";
+    readBtn.onclick = () => toggleRead(book.id);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑";
+    deleteBtn.onclick = () => removeBook(book.id);
+
+    actions.appendChild(readBtn);
+    actions.appendChild(deleteBtn);
+
+    li.appendChild(title);
+    li.appendChild(actions);
+
+    list.appendChild(li);
+  });
+}
+
+// Events
+addBtn.addEventListener("click", addBook);
+
+// Init
+renderBooks();
+</script>
+
+</body>
+</html>
